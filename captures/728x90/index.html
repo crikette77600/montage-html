@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outil de Montage de Bannière</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #canvas-container {
+            position: relative;
+            margin: 20px 0;
+        }
+        canvas {
+            max-width: 100%;
+            max-height: 100%;
+        }
+        input[type="file"] {
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Création de Montage de Bannière</h1>
+
+    <!-- Formulaire de téléchargement de la bannière -->
+    <input type="file" id="upload" accept="image/*">
+    <br>
+
+    <!-- Canvas où l'image sera affichée et manipulée -->
+    <div id="canvas-container">
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <!-- Bouton pour enregistrer l'image modifiée -->
+    <button id="saveBtn">Enregistrer le Montage</button>
+
+    <script>
+        const uploadInput = document.getElementById('upload');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const saveBtn = document.getElementById('saveBtn');
+
+        let img = new Image();
+        let backgroundImg = new Image();
+        
+        // Charger l'image de l'aplat (nouveau fichier téléchargé)
+        backgroundImg.src = 'canvas.png'; // Utilise le nouvel aplat téléchargé
+
+        backgroundImg.onload = function() {
+            // Ajuste la taille du canevas à la taille de l'image d'arrière-plan
+            canvas.width = backgroundImg.width;
+            canvas.height = backgroundImg.height;
+
+            // Affiche l'image de fond sur le canevas
+            ctx.drawImage(backgroundImg, 0, 0, canvas.width, canvas.height);
+        };
+
+        // Fonction pour charger l'image téléchargée
+        uploadInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    img.onload = function() {
+                        // Efface l'ancien contenu et affiche l'image téléchargée sur le canevas
+                        ctx.clearRect(0, 0, canvas.width, canvas.height); 
+                        ctx.drawImage(backgroundImg, 0, 0, canvas.width, canvas.height); // Réaffiche l'aplat
+                        
+                        // Positionner la bannière téléchargée sur la zone du rectangle blanc en bas de l'image
+                        const bannerWidth = 728; // Largeur spécifique de la bannière
+                        const bannerHeight = 90; // Hauteur spécifique de la bannière
+
+                        // Centrer la bannière horizontalement et la placer à 82px du bas
+                        const x = (canvas.width - bannerWidth) / 2; // Centrer horizontalement
+                        const y = canvas.height - bannerHeight - 82; // Placer la bannière 82px au-dessus du bas
+
+                        ctx.drawImage(img, x, y, bannerWidth, bannerHeight); // Affiche la bannière à la bonne position
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Fonction pour enregistrer et télécharger l'image du montage
+        saveBtn.addEventListener('click', () => {
+            const dataURL = canvas.toDataURL(); // Récupère l'image du canvas au format base64
+            const a = document.createElement('a');
+            a.href = dataURL;
+            a.download = 'montage_complet.png'; // Nom du fichier du montage
+            a.click();
+        });
+    </script>
+</body>
+</html>
