@@ -150,6 +150,9 @@ function handleFileSelect(evt) {
 </div>
 
 
+
+
+
 <!-- CONTENU CI-DESSOUS RESTE INCHANGÉ -->
 <div style="width: 100%; margin: 0; padding: 0;">
 <div style="padding:10px 15px; background:#0088CE; color:white; font-weight:bold; font-family:Arial, sans-serif; width:100%; box-sizing:border-box;">
@@ -1802,19 +1805,19 @@ window.addEventListener("load", function () {
     const canvases = document.querySelectorAll("canvas");
 
     const formatMap = {
-  "canvasBP1": "APP_BP1",
-  "canvasBONPLAN": "APP_BP2-3-4",
-  "canvasN1": "APP_NATIVE1",
-  "canvasF300": "WEB_300x600",
-  "canvasF728": "WEB_728x90",
-  "canvasF970": "WEB_970x250",
-  "canvasInterstitiel": "WEB_INTERSTITIEL",
-  "canvasInterstitielapp": "APP_INTERSTITIEL",
-  "canvasF320": "APP_320x100",
-  "canvasF300x250": "APP_300x250"
-};
+      "canvasBP1": "APP_BP1",
+      "canvasBONPLAN": "APP_BP2-3-4",
+      "canvasN1": "APP_NATIVE1",
+      "canvasF300": "WEB_300x600",
+      "canvasF728": "WEB_728x90",
+      "canvasF970": "WEB_970x250",
+      "canvasInterstitiel": "WEB_INTERSTITIEL",
+      "canvasInterstitielapp": "APP_INTERSTITIEL",
+      "canvasF320": "APP_320x100",
+      "canvasF300x250": "WEB_300x250"
+    };
 
-const uploadsMap = {
+    const uploadsMap = {
   "canvasBP1": "uploadProfileBP1",
   "canvasBONPLAN": "uploadProfileBONPLAN",
   "canvasN1": "uploadProfileN1",
@@ -1832,15 +1835,28 @@ const validCanvases = Array.from(canvases).filter(c => {
   const input = document.getElementById(inputId);
   return formatMap[c.id] && c.width > 0 && c.height > 0 && input && input.files.length > 0;
 });
+    if (validCanvases.length === 0) {
+      alert("Aucun montage prêt à être téléchargé.");
+      return;
+    }
 
-const promises = validCanvases.map(canvas =>
-  new Promise((resolve) => {
-    canvas.toBlob((blob) => {
-      zip.file(formatMap[canvas.id] + ".png", blob);
-      resolve();
-    }, "image/jpeg", 0.6);
-  })
-);
+    const promises = validCanvases.map(canvas =>
+      new Promise((resolve) => {
+        canvas.toBlob((blob) => {
+          zip.file(formatMap[canvas.id] + ".png", blob);
+          resolve();
+        }, "image/png");
+      })
+    );
+
+    await Promise.all(promises);
+    const content = await zip.generateAsync({ type: "blob" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(content);
+    a.download = "montages_app_web.zip";
+    a.click();
+  };
+});
 </script>
 </body>
 </html>
