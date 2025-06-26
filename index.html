@@ -148,11 +148,7 @@ function handleFileSelect(evt) {
     Télécharger tous les montages (.zip)
   </button>
 </div>
-<div style="text-align: center; margin: 20px;">
-<button onclick="downloadAllCanvases()" style="padding: 10px 20px; background-color: #0088CE; color: white; font-weight: bold; border: none; border-radius: 6px; cursor: pointer;">
-    Télécharger tous les montages
-  </button>
-</div>
+
 
 
 
@@ -211,7 +207,7 @@ Uniquement pour les -27 ans" rows="3"></textarea>
     let resizedProfileImg = null;
     let backgroundImg = new Image();
 
-    backgroundImg.src = 'https://groupevsc-my.sharepoint.com/my?ga=1&id=%2Fpersonal%2Fchristophe%5Flam%5Fconnect%2Dtech%5Fsncf%2FDocuments%2Fprojet%20screen%2FBP1%2Fcanvas%5F1%2Ejpg&parent=%2Fpersonal%2Fchristophe%5Flam%5Fconnect%2Dtech%5Fsncf%2FDocuments%2Fprojet%20screen%2FBP1%2Fcanvas_1.jpg';
+    backgroundImg.src = 'bp1/canvas_1.jpg';
 
     backgroundImg.onload = function () {
       canvas.width = backgroundImg.width * scale;
@@ -369,7 +365,7 @@ for (let i = 0; i < descLines.length; i++) {
   let selectedCanvasIndex = 1;
 
   function loadCanvasImage(index) {
-    backgroundImg.src = `https://groupevsc-my.sharepoint.com/my?ga=1&id=%2Fpersonal%2Fchristophe%5Flam%5Fconnect%2Dtech%5Fsncf%2FDocuments%2Fprojet%20screen%2FBP1%2Fcanvas%5F1%2Ejpg&parent=%2Fpersonal%2Fchristophe%5Flam%5Fconnect%2Dtech%5Fsncf%2FDocuments%2Fprojet%20screen%2FBP1%2Fcanvas_${index}.jpg`;
+    backgroundImg.src = `bp1/canvas_${index}.jpg`;
   }
 
   function drawCanvas() {
@@ -1821,7 +1817,24 @@ window.addEventListener("load", function () {
       "canvasF300x250": "WEB_300x250"
     };
 
-    const validCanvases = Array.from(canvases).filter(c => formatMap[c.id] && c.width > 0 && c.height > 0);
+    const uploadsMap = {
+  "canvasBP1": "uploadProfileBP1",
+  "canvasBONPLAN": "uploadProfileBONPLAN",
+  "canvasN1": "uploadProfileN1",
+  "canvasF300": "uploadF300",
+  "canvasF728": "uploadF728",
+  "canvasF970": "uploadF970",
+  "canvasInterstitiel": "uploadInterstitiel",
+  "canvasInterstitielapp": "uploadInterstitielapp",
+  "canvasF320": "uploadF320",
+  "canvasF300x250": "uploadF300x250"
+};
+
+const validCanvases = Array.from(canvases).filter(c => {
+  const inputId = uploadsMap[c.id];
+  const input = document.getElementById(inputId);
+  return formatMap[c.id] && c.width > 0 && c.height > 0 && input && input.files.length > 0;
+});
     if (validCanvases.length === 0) {
       alert("Aucun montage prêt à être téléchargé.");
       return;
